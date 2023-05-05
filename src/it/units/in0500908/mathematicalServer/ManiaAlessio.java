@@ -10,10 +10,11 @@ public class ManiaAlessio {
 		try {
 			int serverPort = Integer.parseInt(args[0]);
 
-			MyServer server = new MyServer(serverPort, "BYE");
+			MathematicalServer server = new MathematicalServer(serverPort, "BYE");
 			server.run();
 		} catch (NullPointerException | NumberFormatException ex) {
 			System.err.println("Invalid port number. " + ex);
+			Logger.printLog(System.err, "Unable to create a new server: invalid port number." + ex);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

@@ -1,4 +1,6 @@
-package it.units.in0500908.mathematicalServer;
+package it.units.in0500908.lineProcessingServer;
+
+import it.units.in0500908.mathematicalServer.Logger;
 
 import java.io.*;
 import java.net.Socket;
@@ -8,11 +10,11 @@ import java.net.Socket;
  */
 public class ClientHandler extends Thread {
 	private final Socket socket;
-	private final String quitCommand;
+	private final LineProcessingServer server;
 
-	public ClientHandler(Socket socket, String quitCommand) {
+	public ClientHandler(Socket socket, LineProcessingServer server) {
 		this.socket = socket;
-		this.quitCommand = quitCommand;
+		this.server = server;
 	}
 
 	@Override
@@ -21,34 +23,27 @@ public class ClientHandler extends Thread {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-			//todo sistemare i log
-			System.out.println("Connesso: " + socket.getInetAddress());
+			Logger.printLog(System.out, "New connection: " + socket.getInetAddress());
 
 			while(true) {
 				String request = reader.readLine();
 
-				if(request.equals(quitCommand)) {
+				if(request.equals(server.getQuitCommand())) {
 					break;
 				}
 
-				String response = RequestsHandler.processRequest(request);
-				writer.write(response);
+				writer.write(server.process(request));
 				writer.flush();
 			}
-
-
-		} catch (IOException ex) {
-			System.err.println("Exception!");		//todo
+		} catch (IOException | NullPointerException ex) {
+			Logger.printLog(System.err, "Unhandled exception: " + ex.getMessage());
 		}
 
 		try {
 			socket.close();
+			Logger.printLog(System.out, "Closed connection: " + socket.getInetAddress());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
-
-	//--------------
-
-
 }
