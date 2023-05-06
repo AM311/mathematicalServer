@@ -1,5 +1,7 @@
 package it.units.in0500908.mathematicalServer.computationRequests.expression;
 
+import it.units.in0500908.mathematicalServer.InvalidRequestException;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -39,7 +41,7 @@ public class Operator extends Node {
 	}
 
 	@Override
-	public double evaluate(HashMap<String, Double> iTuple) {
+	public double evaluate(HashMap<String, Double> iTuple) throws InvalidRequestException {
 		Node[] children = new Node[2];
 		this.getChildren().toArray(children);
 

@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 public class VariablesTuples {
 	private LinkedHashMap<String, Integer> variables;                        //Codifica nomi e posizioni relative
 	private double[][] values;
-	public VariablesTuples(String[] varNames, double[][] values) throws RuntimeException {
+	public VariablesTuples(String[] varNames, double[][] values) throws IllegalArgumentException {			//todo custom exception?
 		if (!isValid(varNames, values))
 			throw new IllegalArgumentException("Impossible to create a Tuple: invalid arguments!");
 
@@ -36,8 +36,7 @@ public class VariablesTuples {
 		return varNames.length == length;
 	}
 	//---------
-
-	public HashMap<String, Double> getValuesByIndex(int index) throws RuntimeException {
+	public HashMap<String, Double> getValuesByIndex(int index) throws IndexOutOfBoundsException {
 		if (index > values.length) {
 			throw new IndexOutOfBoundsException("Tuple has less then " + index + " elements!");
 		}

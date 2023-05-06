@@ -2,7 +2,6 @@ package it.units.in0500908.mathematicalServer.computationRequests.expression;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 public class Constant extends Node {

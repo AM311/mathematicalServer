@@ -1,5 +1,7 @@
 package it.units.in0500908.mathematicalServer.computationRequests;
 
+import it.units.in0500908.mathematicalServer.InvalidRequestException;
+
 import java.util.LinkedHashMap;
 
 /**
@@ -8,14 +10,14 @@ import java.util.LinkedHashMap;
 public class VariableValuesFunction {
 	private final LinkedHashMap<String, double[]> variablesValuesTuples;                    //NOTA! MANTIENE ORDINE!
 
-	public VariableValuesFunction(String variableValuesFunction) {
+	public VariableValuesFunction(String variableValuesFunction) throws InvalidRequestException {
 		this.variablesValuesTuples = new LinkedHashMap<>();
 		parseFunction(variableValuesFunction);
 	}
 
 	//----------------
 
-	private void parseFunction(String function) throws RuntimeException {
+	private void parseFunction(String function) throws InvalidRequestException {
 		String[] variablesValues = function.split(",");
 
 		for (int i = 0; i < variablesValues.length; i++) {
@@ -26,19 +28,19 @@ public class VariableValuesFunction {
 				if (values[0].matches("[a-z][a-z0-9]*"))
 					varName = values[0];
 				else
-					throw new IllegalArgumentException("VarName not respecting the protocol!");
+					throw new InvalidRequestException("Unable to process VariableValuesFunction: VarName not respecting the protocol!");
 
 				double lowerBound = Double.parseDouble(values[1]);
 				double upperBound = Double.parseDouble(values[3]);
 				double step = Double.parseDouble(values[2]);
 
 				if (step < 0) {
-					throw new IllegalArgumentException("Step must be positive!");
+					throw new InvalidRequestException("Unable to process VariableValuesFunction: step must be positive!");
 				}
 
 				addEntry(varName, lowerBound, upperBound, step);
 			} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ex) {
-				throw new IllegalArgumentException("Request format not respected!");
+				throw new InvalidRequestException("Unable to process VariableValuesFunction", ex);
 			}
 		}
 	}
@@ -62,7 +64,7 @@ public class VariableValuesFunction {
 
 	//-----------
 
-	public VariablesTuples getTuples(String valuesKind) throws RuntimeException {
+	public VariablesTuples getTuples(String valuesKind) throws InvalidRequestException {
 		if (variablesValuesTuples.size() == 0)
 			return new VariablesTuples(new String[0], new double[0][0]);
 
@@ -78,7 +80,7 @@ public class VariableValuesFunction {
 			case "LIST" -> {
 				result = getList(keysArray);
 			}
-			default -> throw new IllegalArgumentException("Invalid ValuesKind value!");
+			default -> throw new InvalidRequestException("Invalid ValuesKind value!");
 		}
 
 		return new VariablesTuples(keysArray, result);
@@ -112,9 +114,9 @@ public class VariableValuesFunction {
 		return cartesianProduct;
 	}
 
-	private double[][] getList(String[] keysArray) throws RuntimeException {
+	private double[][] getList(String[] keysArray) throws InvalidRequestException {
 		if (!hasSameLength())
-			throw new UnsupportedOperationException("Lists do not have the same length!");
+			throw new InvalidRequestException("Lists do not have the same length!");
 
 		int length = variablesValuesTuples.get(keysArray[0]).length;
 

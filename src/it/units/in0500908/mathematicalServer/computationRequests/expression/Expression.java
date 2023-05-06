@@ -1,5 +1,7 @@
 package it.units.in0500908.mathematicalServer.computationRequests.expression;
 
+import it.units.in0500908.mathematicalServer.InvalidRequestException;
+
 import java.util.HashMap;
 
 /**
@@ -13,7 +15,7 @@ public class Expression {
 		element = parser.parse();
 	}
 
-	public double evaluate(HashMap<String, Double> iTuple) {
+	public double evaluate(HashMap<String, Double> iTuple) throws InvalidRequestException {
 		return element.evaluate(iTuple);
 	}
 }

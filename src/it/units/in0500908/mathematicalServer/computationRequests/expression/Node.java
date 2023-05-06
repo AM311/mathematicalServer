@@ -1,5 +1,8 @@
 package it.units.in0500908.mathematicalServer.computationRequests.expression;
 
+import it.units.in0500908.mathematicalServer.InvalidRequestException;
+
+import java.io.InvalidClassException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -15,7 +18,7 @@ public abstract class Node {
 		return children;
 	}
 
-	public abstract double evaluate(HashMap<String, Double> iTuple);
+	public abstract double evaluate(HashMap<String, Double> iTuple) throws InvalidRequestException;
 
 	@Override
 	public boolean equals(Object o) {

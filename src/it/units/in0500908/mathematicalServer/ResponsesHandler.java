@@ -3,7 +3,8 @@ package it.units.in0500908.mathematicalServer;
 import it.units.in0500908.mathematicalServer.computationRequests.VariablesTuples;
 import it.units.in0500908.mathematicalServer.computationRequests.expression.Expression;
 
-import java.util.HashMap;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 /**
@@ -20,7 +21,9 @@ public class ResponsesHandler {
 
 	//----------------------------
 
-	public static String getStatResponse(String req, long startingTime) {
+	//TODO gestire correttamente (synchronized?)
+
+	public static synchronized String getStatResponse(String req, long startingTime) throws InvalidRequestException {
 		switch (req) {
 			case "STAT_REQS" -> {
 				return buildOkResponse(String.valueOf(okResponsesCounter), startingTime);
@@ -33,51 +36,47 @@ public class ResponsesHandler {
 			}
 		}
 
-		return buildErrResponse("Unhandled Stat Request");
+		throw new InvalidRequestException();
 	}
 
-	public static String getComputationResponse(String computationKind, VariablesTuples tuples, Expression[] expressions, long startingTime) {
-		try {
-			switch (computationKind) {            //todo provare a vedere se si riesce a gestire sia qui che RequestsHandler come Operator con ENUM e FUNCTION
-				case "MIN", "MAX" -> {
-					double returnValue = computationKind.equals("MIN") ? Double.MAX_VALUE : Double.MIN_VALUE;
+	public static String getComputationResponse(String computationKind, VariablesTuples tuples, Expression[] expressions, long startingTime) throws InvalidRequestException {
+		switch (computationKind) {            //todo provare a vedere se si riesce a gestire sia qui che RequestsHandler come Operator con ENUM e FUNCTION
+			case "MIN", "MAX" -> {
+				double returnValue = computationKind.equals("MIN") ? Double.MAX_VALUE : Double.MIN_VALUE;
 
-					for (Expression exp : expressions) {
-						for (int i = 0; i < tuples.getTupleLength(); i++) {
-							double res = exp.evaluate(tuples.getValuesByIndex(i));
+				for (Expression exp : expressions) {
+					for (int i = 0; i < tuples.getTupleLength(); i++) {
+						double res = exp.evaluate(tuples.getValuesByIndex(i));
 
-							if (computationKind.equals("MIN") && res < returnValue) {
-								returnValue = res;
-							} else if (computationKind.equals("MAX") && res > returnValue) {
-								returnValue = res;
-							}
+						if (computationKind.equals("MIN") && res < returnValue) {
+							returnValue = res;
+						} else if (computationKind.equals("MAX") && res > returnValue) {
+							returnValue = res;
 						}
 					}
-
-					return buildOkResponse(String.valueOf(returnValue), startingTime);
 				}
-				case "AVG" -> {
-					double avgValue = 0;
 
-					for (int i = 0; i < tuples.getTupleLength(); i++) {
-						avgValue += expressions[0].evaluate(tuples.getValuesByIndex(i));
-					}
-
-					return buildOkResponse(String.valueOf(avgValue / tuples.getTupleLength()), startingTime);
-				}
-				case "COUNT" -> {
-					return buildOkResponse(String.valueOf(tuples.getTupleLength()), startingTime);
-				}
+				return buildOkResponse(String.valueOf(returnValue), startingTime);
 			}
-		} catch (RuntimeException ex) {
-			return buildErrResponse("Unable to compute a response: " + ex.getMessage());
+			case "AVG" -> {
+				double avgValue = 0;
+
+				for (int i = 0; i < tuples.getTupleLength(); i++) {
+					avgValue += expressions[0].evaluate(tuples.getValuesByIndex(i));
+				}
+
+				return buildOkResponse(String.valueOf(avgValue / tuples.getTupleLength()), startingTime);
+			}
+			case "COUNT" -> {
+				return buildOkResponse(String.valueOf(tuples.getTupleLength()), startingTime);
+			}
 		}
 
-		return buildErrResponse("Unhandled Computation Request.");
+		throw new InvalidRequestException("Unhandled Computation Request");
 	}
 
 	//----------------------------
-	private static String buildOkResponse(String response, long startingTime) {
+	private static synchronized String buildOkResponse(String response, long startingTime) {
 		int responseTime = (int) (System.currentTimeMillis() - startingTime);
 
 		ResponsesHandler.updateCounters(responseTime);
@@ -85,9 +84,15 @@ public class ResponsesHandler {
 		return "OK" + ';' + millisFormat(responseTime) + ';' + response;
 	}
 
-	private static String millisFormat(long millis) {
+	private static String millisFormat(long millis) {                    //todo spostare su classe a parte assieme a formatter per double
+		DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+		dfs.setDecimalSeparator('.');
+		DecimalFormat df = new DecimalFormat("#.#", dfs);
+		df.setMinimumFractionDigits(3);
+		df.setGroupingUsed(false);
+
 		double seconds = (double) millis / 1000.0;
-		return String.format(Locale.US, "%.3f", seconds);
+		return df.format(seconds);
 	}
 
 	private static void updateCounters(int responseTime) {
