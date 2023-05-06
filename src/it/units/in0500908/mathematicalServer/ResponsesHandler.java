@@ -3,7 +3,8 @@ package it.units.in0500908.mathematicalServer;
 import it.units.in0500908.mathematicalServer.computationRequests.VariablesTuples;
 import it.units.in0500908.mathematicalServer.computationRequests.expression.Expression;
 
-import java.util.HashMap;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 /**
@@ -20,7 +21,9 @@ public class ResponsesHandler {
 
 	//----------------------------
 
-	public static String getStatResponse(String req, long startingTime) {
+	//TODO gestire correttamente (synchronized?)
+
+	public static String getStatResponse(String req, long startingTime) throws InvalidRequestException {
 		switch (req) {
 			case "STAT_REQS" -> {
 				return buildOkResponse(String.valueOf(okResponsesCounter), startingTime);
@@ -33,10 +36,10 @@ public class ResponsesHandler {
 			}
 		}
 
-		return buildErrResponse("Unhandled Stat Request");
+		throw new InvalidRequestException();
 	}
 
-	public static String getComputationResponse(String computationKind, VariablesTuples tuples, Expression[] expressions, long startingTime) {
+	public static String getComputationResponse(String computationKind, VariablesTuples tuples, Expression[] expressions, long startingTime) throws InvalidRequestException {
 		try {
 			switch (computationKind) {            //todo provare a vedere se si riesce a gestire sia qui che RequestsHandler come Operator con ENUM e FUNCTION
 				case "MIN", "MAX" -> {
@@ -70,10 +73,10 @@ public class ResponsesHandler {
 				}
 			}
 		} catch (RuntimeException ex) {
-			return buildErrResponse("Unable to compute a response: " + ex.getMessage());
+			throw new InvalidRequestException("Unable to compute a response", ex);
 		}
 
-		return buildErrResponse("Unhandled Computation Request.");
+		throw new InvalidRequestException("Unhandled Computation Request");
 	}
 
 	//----------------------------
@@ -85,9 +88,15 @@ public class ResponsesHandler {
 		return "OK" + ';' + millisFormat(responseTime) + ';' + response;
 	}
 
-	private static String millisFormat(long millis) {
+	private static String millisFormat(long millis) {					//todo spostare su classe a parte assieme a formatter per double
+		DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+		dfs.setDecimalSeparator('.');
+		DecimalFormat df = new DecimalFormat("#.#", dfs);
+		df.setMinimumFractionDigits(3);
+		df.setGroupingUsed(false);
+
 		double seconds = (double) millis / 1000.0;
-		return String.format(Locale.US, "%.3f", seconds);
+		return df.format(seconds);
 	}
 
 	private static void updateCounters(int responseTime) {

@@ -16,7 +16,7 @@ public class ManiaAlessio {
 			System.err.println("Invalid port number. " + ex);
 			Logger.printLog(System.err, "Unable to create a new server: invalid port number." + ex);
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			Logger.printLog(System.err, "Unable to start MathematicalServer: " + e);
 		}
 	}
 }

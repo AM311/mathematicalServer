@@ -35,15 +35,12 @@ public class ClientHandler extends Thread {
 				writer.write(server.process(request));
 				writer.flush();
 			}
-		} catch (IOException | NullPointerException ex) {
-			Logger.printLog(System.err, "Unhandled exception: " + ex.getMessage());
+		} catch (IOException ex) {
+			Logger.printLog(System.err, "Unhandled IO exception: " + ex.getMessage());
+		} catch (NullPointerException ex) {
+			Logger.printLog(System.err, "Client " + socket.getInetAddress() + " abruptly closed connection.");
 		}
 
-		try {
-			socket.close();
-			Logger.printLog(System.out, "Closed connection: " + socket.getInetAddress());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		Logger.printLog(System.out, "Closed connection: " + socket.getInetAddress());
 	}
 }

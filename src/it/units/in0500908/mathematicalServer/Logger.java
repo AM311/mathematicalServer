@@ -1,6 +1,5 @@
 package it.units.in0500908.mathematicalServer;
 
-import java.io.OutputStream;
 import java.io.PrintStream;
 
 /**
