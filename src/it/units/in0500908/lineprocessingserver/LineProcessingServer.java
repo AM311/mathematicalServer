@@ -1,6 +1,6 @@
-package it.units.in0500908.lineProcessingServer;
+package it.units.in0500908.lineprocessingserver;
 
-import it.units.in0500908.mathematicalServer.Logger;
+import it.units.in0500908.utils.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -9,13 +9,15 @@ import java.net.Socket;
 /**
  * @author Alessio Manià - IN0500908
  */
-public abstract class LineProcessingServer {
+public class LineProcessingServer {
 	private final int port;
 	private final String quitCommand;
+	private final RequestsProcessor requestsProcessor;
 
-	public LineProcessingServer(int port, String quitCommand) {
+	public LineProcessingServer(int port, String quitCommand, RequestsProcessor requestsProcessor) {
 		this.port = port;
 		this.quitCommand = quitCommand;
+		this.requestsProcessor = requestsProcessor;
 	}
 
 	public String getQuitCommand() {
@@ -38,6 +40,8 @@ public abstract class LineProcessingServer {
 		}
 	}
 
-	public abstract String process(String request);
+	public String process(String request) {
+		return requestsProcessor.process(request);
+	}
 
 }

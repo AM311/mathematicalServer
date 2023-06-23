@@ -1,6 +1,6 @@
-package it.units.in0500908.mathematicalServer.computationRequests;
+package it.units.in0500908.mathematicalserver.handlers.specificrequestshandlers.computationrequests;
 
-import it.units.in0500908.mathematicalServer.InvalidRequestException;
+import it.units.in0500908.mathematicalserver.InvalidRequestException;
 
 import java.util.LinkedHashMap;
 

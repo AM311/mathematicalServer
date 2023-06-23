@@ -1,4 +1,6 @@
-package it.units.in0500908.mathematicalServer.computationRequests.expression;
+package it.units.in0500908.mathematicalserver.handlers.specificrequestshandlers.computationrequests.expression;
+
+import it.units.in0500908.mathematicalserver.InvalidRequestException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,11 +19,11 @@ public class Variable extends Node {
 	}
 
 	@Override
-	public double evaluate(HashMap<String, Double> iTuple) throws NullPointerException {
+	public double evaluate(HashMap<String, Double> iTuple) throws InvalidRequestException {
 		try {
 			return iTuple.get(name);
 		} catch (NullPointerException ex) {
-			throw new NullPointerException("Trying to call a non-declared variable!");
+			throw new InvalidRequestException("Trying to call a non-declared variable");
 		}
 	}
 

@@ -1,6 +1,6 @@
-package it.units.in0500908.lineProcessingServer;
+package it.units.in0500908.lineprocessingserver;
 
-import it.units.in0500908.mathematicalServer.Logger;
+import it.units.in0500908.utils.Logger;
 
 import java.io.*;
 import java.net.Socket;
