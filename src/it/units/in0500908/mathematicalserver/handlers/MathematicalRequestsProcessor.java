@@ -19,8 +19,8 @@ public class MathematicalRequestsProcessor implements RequestsProcessor {
 	private final ExecutorService executorService;
 	public MathematicalRequestsProcessor() {
 		responsesProcessor = new MathematicalResponsesProcessor("OK", "ERR");
-		limitedExecutorService = Executors.newCachedThreadPool();
-		executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+		executorService = Executors.newCachedThreadPool();
+		limitedExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	}
 
 	//-----------------
@@ -29,7 +29,7 @@ public class MathematicalRequestsProcessor implements RequestsProcessor {
 		long startingMillis = System.currentTimeMillis();
 		Future<String> futureResponse;
 
-		try (executorService) {
+		try {
 			if (isStatRequest(request)) {
 				synchronized (responsesProcessor) {                                                    //todo spostare, così non funziona correttamente
 					//return responsesProcessor.buildOkResponse(specificRequestProcessor.process(request), startingMillis);

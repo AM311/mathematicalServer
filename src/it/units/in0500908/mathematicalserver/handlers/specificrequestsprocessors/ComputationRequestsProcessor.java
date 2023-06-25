@@ -5,6 +5,7 @@ import it.units.in0500908.mathematicalserver.InvalidRequestException;
 import it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests.VariableValuesFunction;
 import it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests.VariablesTuples;
 import it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests.expression.Expression;
+import it.units.in0500908.utils.Logger;
 import it.units.in0500908.utils.NumbersFormatter;
 
 import java.util.ArrayList;
@@ -60,6 +61,9 @@ public class ComputationRequestsProcessor implements SpecificRequestHandler {
 		} catch (IllegalArgumentException ex) {
 			throw new InvalidRequestException("Invalid computation request: unable to process Expression", ex);
 		}
+
+		Logger.printLog(System.out, "vvf: " + vvf);							//TODO TEMPORANEI!
+		Logger.printLog(System.out, "tuples: " + variablesTuples);
 
 		return getComputationResponse(computationKind, variablesTuples, expressions);
 	}
