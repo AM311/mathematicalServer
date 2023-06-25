@@ -1,26 +1,33 @@
-package it.units.in0500908.mathematicalserver.handlers.specificrequestshandlers;
+package it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors;
 
-import it.units.in0500908.lineprocessingserver.SpecificRequestProcessor;
+import it.units.in0500908.lineprocessingserver.SpecificRequestHandler;
 import it.units.in0500908.mathematicalserver.InvalidRequestException;
-import it.units.in0500908.mathematicalserver.handlers.specificrequestshandlers.computationrequests.VariableValuesFunction;
-import it.units.in0500908.mathematicalserver.handlers.specificrequestshandlers.computationrequests.VariablesTuples;
-import it.units.in0500908.mathematicalserver.handlers.specificrequestshandlers.computationrequests.expression.Expression;
+import it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests.VariableValuesFunction;
+import it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests.VariablesTuples;
+import it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests.expression.Expression;
 import it.units.in0500908.utils.NumbersFormatter;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Alessio Manià - IN0500908
  */
-public class ComputationRequestsProcessor implements SpecificRequestProcessor {
+public class ComputationRequestsProcessor implements SpecificRequestHandler {
+	private final String request;
+
+	public ComputationRequestsProcessor(String request) {
+		this.request = request;
+	}
+
 	@Override
-	public String process(String request) throws InvalidRequestException {
-		List<String> computationKinds = Arrays.asList("MIN", "MAX", "AVG", "COUNT");			//todo valutare se togliere (già verificato a monte)
-		List<String> valuesKinds = Arrays.asList("GRID", "LIST");
+	public String call() throws InvalidRequestException {
+		Set<String> computationKinds = Set.of("MIN", "MAX", "AVG", "COUNT");            //todo valutare se togliere (già verificato a monte)
+		Set<String> valuesKinds = Set.of("GRID", "LIST");
 
 		String computationKind;
-		VariableValuesFunction vvf;
+		VariableValuesFunction vvf;                                                    //todo valutare se conviene modellare solo una funzione nella classe
 		VariablesTuples variablesTuples;
 		Expression[] expressions;
 
@@ -28,7 +35,7 @@ public class ComputationRequestsProcessor implements SpecificRequestProcessor {
 		String[] firstSplit = request.split("_");
 		computationKind = firstSplit[0];
 
-		if (firstSplit.length != 2 || !computationKinds.contains(firstSplit[0])) {
+		if (firstSplit.length != 2 || !computationKinds.contains(computationKind)) {
 			throw new InvalidRequestException("Format not matching any kind of request");
 		}
 

@@ -1,22 +1,26 @@
-package it.units.in0500908.mathematicalserver.handlers.specificrequestshandlers;
+package it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors;
 
 import it.units.in0500908.lineprocessingserver.ResponsesProcessorWithStatistics;
-import it.units.in0500908.lineprocessingserver.SpecificRequestProcessor;
+import it.units.in0500908.lineprocessingserver.SpecificRequestHandler;
 import it.units.in0500908.mathematicalserver.InvalidRequestException;
 import it.units.in0500908.utils.NumbersFormatter;
+
+import java.util.concurrent.Callable;
 
 /**
  * @author Alessio Manià - IN0500908
  */
-public class StatRequestsProcessor implements SpecificRequestProcessor {
+public class StatRequestsProcessor implements SpecificRequestHandler {
 	private final ResponsesProcessorWithStatistics responsesProcessor;
+	private final String request;
 
-	public StatRequestsProcessor(ResponsesProcessorWithStatistics responsesProcessor) {
+	public StatRequestsProcessor(ResponsesProcessorWithStatistics responsesProcessor, String request) {
 		this.responsesProcessor = responsesProcessor;
+		this.request = request;
 	}
 
 	@Override
-	public String process(String request) throws InvalidRequestException {
+	public String call() throws InvalidRequestException {
 		switch (request) {
 			case "STAT_REQS" -> {
 				return String.valueOf(responsesProcessor.getOkResponsesCounter());

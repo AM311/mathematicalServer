@@ -24,6 +24,10 @@ public class LineProcessingServer {
 		return quitCommand;
 	}
 
+	public RequestsProcessor getRequestsProcessor() {
+		return requestsProcessor;
+	}
+
 	//========================
 	public void run() throws IOException {
 		try (ServerSocket serverSocket = new ServerSocket(port)) {
@@ -39,9 +43,4 @@ public class LineProcessingServer {
 			}
 		}
 	}
-
-	public String process(String request) {
-		return requestsProcessor.process(request);
-	}
-
 }

@@ -1,9 +1,10 @@
-package it.units.in0500908.mathematicalserver.handlers.specificrequestshandlers.computationrequests.expression;
+package it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests.expression;
 
 import it.units.in0500908.mathematicalserver.InvalidRequestException;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Variable extends Node {
@@ -19,7 +20,7 @@ public class Variable extends Node {
 	}
 
 	@Override
-	public double evaluate(HashMap<String, Double> iTuple) throws InvalidRequestException {
+	public double evaluate(Map<String, Double> iTuple) throws InvalidRequestException {
 		try {
 			return iTuple.get(name);
 		} catch (NullPointerException ex) {
