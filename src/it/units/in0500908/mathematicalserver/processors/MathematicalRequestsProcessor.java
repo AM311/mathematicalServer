@@ -1,13 +1,16 @@
-package it.units.in0500908.mathematicalserver.handlers;
+package it.units.in0500908.mathematicalserver.processors;
 
 import it.units.in0500908.lineprocessingserver.RequestsProcessor;
 import it.units.in0500908.lineprocessingserver.ResponsesProcessorWithStatistics;
 import it.units.in0500908.mathematicalserver.InvalidRequestException;
-import it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.ComputationRequestsProcessor;
-import it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.StatRequestsProcessor;
+import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.ComputationRequestsProcessor;
+import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.StatRequestsProcessor;
 
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * @author Alessio Manià - IN0500908
@@ -17,6 +20,7 @@ public class MathematicalRequestsProcessor implements RequestsProcessor {
 	//ResponsesHandler definito internamente perché dipende STRETTAMENTE dal corpo di questa classe!
 	private final ExecutorService limitedExecutorService;
 	private final ExecutorService executorService;
+
 	public MathematicalRequestsProcessor() {
 		responsesProcessor = new MathematicalResponsesProcessor("OK", "ERR");
 		executorService = Executors.newCachedThreadPool();
@@ -32,21 +36,20 @@ public class MathematicalRequestsProcessor implements RequestsProcessor {
 		try {
 			if (isStatRequest(request)) {
 				synchronized (responsesProcessor) {                                                    //todo spostare, così non funziona correttamente
-					//return responsesProcessor.buildOkResponse(specificRequestProcessor.process(request), startingMillis);
 					futureResponse = executorService.submit(new StatRequestsProcessor(responsesProcessor, request));
 				}
 			} else if (isComputationRequest(request)) {
-				//specificRequestProcessor = new ComputationRequestsProcessor();
 				futureResponse = limitedExecutorService.submit(new ComputationRequestsProcessor(request));
 			} else {
 				throw new InvalidRequestException("String not matching any kind of accepted request.");
 			}
 
-			return responsesProcessor.buildOkResponse(futureResponse.get(), startingMillis);
+			String res = futureResponse.get();
+			return responsesProcessor.buildOkResponse(res, startingMillis);
+		} catch (ExecutionException | InterruptedException ex) {
+			return responsesProcessor.buildErrResponse(ex.getCause().getLocalizedMessage());
 		} catch (InvalidRequestException ex) {
 			return responsesProcessor.buildErrResponse(ex.getLocalizedMessage());
-		} catch (ExecutionException | InterruptedException ex) {
-			return responsesProcessor.buildErrResponse("Error during computation" + ex.getLocalizedMessage());
 		}
 	}
 

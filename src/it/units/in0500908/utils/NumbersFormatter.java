@@ -27,6 +27,7 @@ public class NumbersFormatter {
 	public static String decimalFormat(double number) {
 		DecimalFormatSymbols dfs = new DecimalFormatSymbols();
 		dfs.setDecimalSeparator('.');
+		dfs.setInfinity("Infinity");
 		DecimalFormat df = new DecimalFormat("#.#", dfs);
 		df.setMinimumFractionDigits(numOfDecimals);
 		df.setGroupingUsed(false);

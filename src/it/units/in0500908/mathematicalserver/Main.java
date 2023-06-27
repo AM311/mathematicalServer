@@ -1,7 +1,7 @@
 package it.units.in0500908.mathematicalserver;
 
 import it.units.in0500908.lineprocessingserver.LineProcessingServer;
-import it.units.in0500908.mathematicalserver.handlers.MathematicalRequestsProcessor;
+import it.units.in0500908.mathematicalserver.processors.MathematicalRequestsProcessor;
 import it.units.in0500908.utils.Logger;
 
 import java.io.IOException;

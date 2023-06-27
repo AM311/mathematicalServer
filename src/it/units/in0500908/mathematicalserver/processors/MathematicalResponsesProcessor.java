@@ -1,4 +1,4 @@
-package it.units.in0500908.mathematicalserver.handlers;
+package it.units.in0500908.mathematicalserver.processors;
 
 import it.units.in0500908.lineprocessingserver.ResponsesProcessorWithStatistics;
 import it.units.in0500908.utils.NumbersFormatter;
