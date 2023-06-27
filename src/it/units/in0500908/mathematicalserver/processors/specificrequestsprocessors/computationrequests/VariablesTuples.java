@@ -1,4 +1,4 @@
-package it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests;
+package it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests;
 
 import java.util.*;
 
@@ -7,9 +7,7 @@ import java.util.*;
  */
 public class VariablesTuples {
 	private final Map<String, Integer> variables;                        //Codifica nomi e posizioni relative
-	//private final double[][] values;
 	private final List<List<Double>> values;							//List<List> e non Set<List> per coerenza con la notazione della consegna
-	//public VariablesTuples(String[] varNames, double[][] values) throws IllegalArgumentException {
 	public VariablesTuples(List<String> varNames, List<List<Double>> values) throws IllegalArgumentException {			//todo custom exception?
 		if (!isValid(varNames, values))
 			throw new IllegalArgumentException("Impossible to create a Tuple: invalid arguments!");
@@ -45,11 +43,8 @@ public class VariablesTuples {
 		}
 
 		Map<String, Double> iValues = new HashMap<>();
-		//String[] varNames = new String[variables.size()];
-		//variables.keySet().toArray(varNames);
 
 		for (String varName : variables.keySet()) {											//Ordine è garantito: LinkedHashMap --> SortedSet in runtime
-			//iValues.put(varName, values[index][variables.get(varName)]);
 			iValues.put(varName, values.get(index).get(variables.get(varName)));
 		}
 

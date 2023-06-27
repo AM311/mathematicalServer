@@ -1,16 +1,14 @@
-package it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors;
+package it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors;
 
 import it.units.in0500908.lineprocessingserver.SpecificRequestHandler;
 import it.units.in0500908.mathematicalserver.InvalidRequestException;
-import it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests.VariableValuesFunction;
-import it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests.VariablesTuples;
-import it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests.expression.Expression;
-import it.units.in0500908.utils.Logger;
+import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests.VariableValuesFunction;
+import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests.VariablesTuples;
+import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests.expression.Expression;
 import it.units.in0500908.utils.NumbersFormatter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Alessio Manià - IN0500908
@@ -62,9 +60,6 @@ public class ComputationRequestsProcessor implements SpecificRequestHandler {
 			throw new InvalidRequestException("Invalid computation request: unable to process Expression", ex);
 		}
 
-		Logger.printLog(System.out, "vvf: " + vvf);							//TODO TEMPORANEI!
-		Logger.printLog(System.out, "tuples: " + variablesTuples);
-
 		return getComputationResponse(computationKind, variablesTuples, expressions);
 	}
 
@@ -77,14 +72,13 @@ public class ComputationRequestsProcessor implements SpecificRequestHandler {
 					for (int i = 0; i < tuples.getTupleLength(); i++) {
 						double res = exp.evaluate(tuples.getValuesByIndex(i));
 
-						if (computationKind.equals("MIN") && res < returnValue) {
+						if (computationKind.equals("MIN") && Double.compare(res, returnValue) < 0) {                //Comparazione tramite Double gestisce NaN
 							returnValue = res;
-						} else if (computationKind.equals("MAX") && res > returnValue) {
+						} else if (computationKind.equals("MAX") && Double.compare(res, returnValue) > 0) {
 							returnValue = res;
 						}
 					}
 				}
-
 				return NumbersFormatter.decimalFormat(returnValue);
 			}
 			case "AVG" -> {

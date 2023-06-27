@@ -1,19 +1,16 @@
-package it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests;
+package it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests;
 
 import it.units.in0500908.mathematicalserver.InvalidRequestException;
-import it.units.in0500908.utils.Logger;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 /**
  * @author Alessio Manià - IN0500908
  */
 public class VariableValuesFunction {
-	//private final Map<String, double[]> variablesValuesTuples;                    //NOTA! MANTIENE ORDINE!
 	private final Map<String, List<Double>> variablesValuesTuples;                    //NOTA! MANTIENE ORDINE!
 
 	public VariableValuesFunction(String variableValuesFunctionString) throws InvalidRequestException {
@@ -68,10 +65,7 @@ public class VariableValuesFunction {
 			return new VariablesTuples(new ArrayList<>(), new ArrayList<>());
 
 		List<String> keysList = new ArrayList<>(variablesValuesTuples.keySet());		//necessario per accedere a i-mo elemento
-		//variablesValuesTuples.keySet().toArray(keysArray);
-		//SortedSet<String> keySet = (SortedSet<String>) variablesValuesTuples.keySet();
 
-		//double[][] result;
 		List<List<Double>> result;
 
 		switch (valuesKind) {
@@ -108,9 +102,7 @@ public class VariableValuesFunction {
 			List<Double> list = new ArrayList<>();
 
 			for (List<Double> tuple : tuples) {
-				//double[] tuple = tuples[k];
 				list.add(tuple.get((i / j) % tuple.size()));
-				//cartesianProduct[i][k] = tuple[(i / j) % tuples.get(k).size()];
 				j *= tuple.size();
 			}
 
@@ -126,19 +118,15 @@ public class VariableValuesFunction {
 
 		int length = variablesValuesTuples.get(keysList.get(0)).size();
 
-		//double[][] tuples = new double[variablesValuesTuples.size()][length];
-		//variablesValuesTuples.values().toArray(tuples);
 		List<List<Double>> tuples = new ArrayList<>(variablesValuesTuples.values());
 
 		//---
 
-		//double[][] outputTuples = new double[length][variablesValuesTuples.size()];
 		List<List<Double>> outputTuples = new ArrayList<>();
 
 		for (int i = 0; i < length; i++) {
 			List<Double> list = new ArrayList<>();
 			for (int j = 0; j < variablesValuesTuples.size(); j++) {
-				//outputTuples[i][j] = tuples[j][i];
 				list.add(tuples.get(j).get(i));
 			}
 

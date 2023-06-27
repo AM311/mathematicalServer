@@ -1,4 +1,4 @@
-package it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests.expression;
+package it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests.expression;
 
 import java.util.Arrays;
 import java.util.regex.Matcher;
@@ -13,7 +13,8 @@ public class Parser {
 	private int cursor = 0;
 
 	public Parser(String string) {
-		this.string = string.replace(" ", "");
+		//this.string = string.replace(" ", "");
+		this.string = string;									//tolta tolleranza sugli spazi: protocollo non lo prevede!
 	}
 
 	public enum TokenType {

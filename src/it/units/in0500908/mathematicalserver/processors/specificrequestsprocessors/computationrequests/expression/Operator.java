@@ -1,8 +1,7 @@
-package it.units.in0500908.mathematicalserver.handlers.specificrequestsprocessors.computationrequests.expression;
+package it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests.expression;
 
 import it.units.in0500908.mathematicalserver.InvalidRequestException;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -74,7 +73,7 @@ public class Operator extends Node {
 		sb.append("(");
 		sb.append(getChildren().stream()
 				.map(Node::toString)
-				.collect(Collectors.joining(" " + Character.toString(type.symbol) + " "))
+				.collect(Collectors.joining(String.valueOf(type.symbol)))
 		);
 		sb.append(")");
 		return sb.toString();
