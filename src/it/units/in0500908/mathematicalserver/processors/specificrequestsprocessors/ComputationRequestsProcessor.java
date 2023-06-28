@@ -1,23 +1,29 @@
 package it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors;
 
-import it.units.in0500908.lineprocessingserver.SpecificRequestHandler;
+import it.units.in0500908.lineprocessingserver.SpecificRequestsProcessor;
 import it.units.in0500908.mathematicalserver.InvalidRequestException;
+import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests.ValueTuples;
 import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests.VariableValuesFunction;
-import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests.VariablesTuples;
 import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests.expression.Expression;
+import it.units.in0500908.utils.Logger;
 import it.units.in0500908.utils.NumbersFormatter;
 
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Alessio Manià - IN0500908
  */
-public class ComputationRequestsProcessor implements SpecificRequestHandler {
-	private final String request;
+public class ComputationRequestsProcessor implements SpecificRequestsProcessor {
+	private final String request;                            //Necessario: callable non accetta parametri
 
 	public ComputationRequestsProcessor(String request) {
 		this.request = request;
+	}
+
+	public static boolean isComputationRequest(String request) {
+		final String regex = "^(AVG|MAX|MIN|COUNT)(_)(GRID|LIST)(;)(.*)";
+
+		return request.matches(regex);
 	}
 
 	@Override
@@ -26,51 +32,53 @@ public class ComputationRequestsProcessor implements SpecificRequestHandler {
 		Set<String> valuesKinds = Set.of("GRID", "LIST");
 
 		String computationKind;
-		VariableValuesFunction vvf;                                                    //todo valutare se conviene modellare solo una funzione nella classe
-		VariablesTuples variablesTuples;
+		VariableValuesFunction variableValuesFunction;
+		ValueTuples valueTuples;
 		Expression[] expressions;
 
 		// >>> ComputationKind + OTHERS
-		String[] firstSplit = request.split("_");
-		computationKind = firstSplit[0];
+		String[] firstSplitTokens = request.split("_");
+		computationKind = firstSplitTokens[0];
 
-		if (firstSplit.length != 2 || !computationKinds.contains(computationKind)) {
+		if (firstSplitTokens.length != 2 || !computationKinds.contains(computationKind)) {			//todo togliere contains qui e sotto
 			throw new InvalidRequestException("Format not matching any kind of request");
 		}
 
 		// >>> ValuesKind + variableValuesFunction + Expressions (1+)
-		String[] secondSplit = firstSplit[1].split(";");
+		String[] secondSplitTokens = firstSplitTokens[1].split(";");
 
-		if (secondSplit.length < 3 || !valuesKinds.contains(secondSplit[0])) {
+		if (secondSplitTokens.length < 3 || !valuesKinds.contains(secondSplitTokens[0])) {
 			throw new InvalidRequestException("Format not matching any kind of request");
 		}
 
-		// VariablesTuples
-		vvf = new VariableValuesFunction(secondSplit[1]);
-		variablesTuples = vvf.getTuples(secondSplit[0]);
+		// ValueTuples
+		variableValuesFunction = new VariableValuesFunction(secondSplitTokens[1]);
+		valueTuples = variableValuesFunction.getTuples(secondSplitTokens[0]);
 
 		// Expressions
-		expressions = new Expression[secondSplit.length - 2];
+		expressions = new Expression[secondSplitTokens.length - 2];
 
 		try {
-			for (int i = 0; i < secondSplit.length - 2; i++) {
-				expressions[i] = new Expression(secondSplit[i + 2]);
+			for (int i = 0; i < secondSplitTokens.length - 2; i++) {
+				expressions[i] = new Expression(secondSplitTokens[i + 2]);
 			}
 		} catch (IllegalArgumentException ex) {
 			throw new InvalidRequestException("Invalid computation request: unable to process Expression", ex);
 		}
 
-		return getComputationResponse(computationKind, variablesTuples, expressions);
+		Logger.printLog(System.out, valueTuples.toString());            //TEST
+
+		return getComputationResponse(computationKind, valueTuples, expressions);
 	}
 
-	public static String getComputationResponse(String computationKind, VariablesTuples tuples, Expression[] expressions) throws InvalidRequestException {
+	private static String getComputationResponse(String computationKind, ValueTuples tuples, Expression[] expressions) throws InvalidRequestException {
 		switch (computationKind) {
 			case "MIN", "MAX" -> {
 				double returnValue = computationKind.equals("MIN") ? Double.MAX_VALUE : Double.MIN_VALUE;
 
 				for (Expression exp : expressions) {
-					for (int i = 0; i < tuples.getTupleLength(); i++) {
-						double res = exp.evaluate(tuples.getValuesByIndex(i));
+					for (int i = 0; i < tuples.getNumOfTuples(); i++) {
+						double res = exp.evaluate(tuples.getTupleByIndex(i));
 
 						if (computationKind.equals("MIN") && Double.compare(res, returnValue) < 0) {                //Comparazione tramite Double gestisce NaN
 							returnValue = res;
@@ -84,14 +92,14 @@ public class ComputationRequestsProcessor implements SpecificRequestHandler {
 			case "AVG" -> {
 				double avgValue = 0;
 
-				for (int i = 0; i < tuples.getTupleLength(); i++) {
-					avgValue += expressions[0].evaluate(tuples.getValuesByIndex(i));
+				for (int i = 0; i < tuples.getNumOfTuples(); i++) {
+					avgValue += expressions[0].evaluate(tuples.getTupleByIndex(i));
 				}
 
-				return NumbersFormatter.decimalFormat(avgValue / tuples.getTupleLength());
+				return NumbersFormatter.decimalFormat(avgValue / tuples.getNumOfTuples());
 			}
 			case "COUNT" -> {
-				return String.valueOf(tuples.getTupleLength());
+				return String.valueOf(tuples.getNumOfTuples());
 			}
 		}
 

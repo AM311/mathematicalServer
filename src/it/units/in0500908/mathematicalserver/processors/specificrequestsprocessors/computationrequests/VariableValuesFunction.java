@@ -11,20 +11,21 @@ import java.util.stream.Stream;
  * @author Alessio Manià - IN0500908
  */
 public class VariableValuesFunction {
-	private final Map<String, List<Double>> variablesValuesTuples;                    //NOTA! MANTIENE ORDINE!
+	private final Map<String, List<Double>> variablesValuesTuples;
 
 	public VariableValuesFunction(String variableValuesFunctionString) throws InvalidRequestException {
-		this.variablesValuesTuples = new LinkedHashMap<>();
+		this.variablesValuesTuples = new LinkedHashMap<>();                        //NOTA! MANTIENE ORDINE!
 		parseFunction(variableValuesFunctionString);
 	}
 
 	//----------------
 
+	//Scelto di fare parsing e salvare direttamente valori: non necessaria memoria su tupla iniziale da cui derivano
 	private void parseFunction(String function) throws InvalidRequestException {
 		String[] variablesValues = function.split(",");
 
-		for (String variablesValue : variablesValues) {
-			String[] values = variablesValue.split(":");
+		for (String variableValues : variablesValues) {
+			String[] values = variableValues.split(":");
 
 			try {
 				String varName;
@@ -51,20 +52,20 @@ public class VariableValuesFunction {
 	//----------------
 
 	public List<Double> generateValues(double lowerBound, double upperBound, double step) {
-		BigDecimal bdLowerBound = new BigDecimal(lowerBound);								//Utilizzo di BigDecimal per migliorare precisione
+		BigDecimal bdLowerBound = new BigDecimal(lowerBound);                                //Utilizzo di BigDecimal per migliorare precisione
 		BigDecimal bdStep = new BigDecimal(step);
 		BigDecimal bdUpperBound = new BigDecimal(upperBound).add(bdStep);
 
-		return Stream.iterate(bdLowerBound, d -> d.compareTo(bdUpperBound) <0, d -> d.add(bdStep)).mapToDouble(BigDecimal::doubleValue).boxed().collect(Collectors.toList());
+		return Stream.iterate(bdLowerBound, d -> d.compareTo(bdUpperBound) < 0, d -> d.add(bdStep)).mapToDouble(BigDecimal::doubleValue).boxed().collect(Collectors.toList());
 	}
 
 	//-----------
 
-	public VariablesTuples getTuples(String valuesKind) throws InvalidRequestException {
+	public ValueTuples getTuples(String valuesKind) throws InvalidRequestException {
 		if (variablesValuesTuples.size() == 0)
-			return new VariablesTuples(new ArrayList<>(), new ArrayList<>());
+			return new ValueTuples(new ArrayList<>(), new ArrayList<>());
 
-		List<String> keysList = new ArrayList<>(variablesValuesTuples.keySet());		//necessario per accedere a i-mo elemento
+		List<String> keysList = new ArrayList<>(variablesValuesTuples.keySet());        //necessario per accedere a i-mo elemento
 
 		List<List<Double>> result;
 
@@ -78,26 +79,24 @@ public class VariableValuesFunction {
 			default -> throw new InvalidRequestException("Invalid ValuesKind value!");
 		}
 
-		return new VariablesTuples(keysList, result);
+		return new ValueTuples(keysList, result);
 	}
 
-	private List<List<Double>> getCartesianProduct( List<String> keysList) {
+	private List<List<Double>> getCartesianProduct(List<String> keysList) {
 		List<List<Double>> tuples = new ArrayList<>();
 
-		for (String s : keysList) {
-			tuples.add(variablesValuesTuples.get(s));
+		for (String variableName : keysList) {
+			tuples.add(variablesValuesTuples.get(variableName));
 		}
 
-		//---
-
-		int solutions = 1;
+		int numOfTuples = 1;
 		for (List<Double> tuple : tuples) {
-			solutions *= tuple.size();
+			numOfTuples *= tuple.size();
 		}
 
 		List<List<Double>> cartesianProduct = new ArrayList<>();
 
-		for (int i = 0; i < solutions; i++) {
+		for (int i = 0; i < numOfTuples; i++) {
 			int j = 1;
 			List<Double> list = new ArrayList<>();
 
@@ -118,18 +117,13 @@ public class VariableValuesFunction {
 
 		int length = variablesValuesTuples.get(keysList.get(0)).size();
 
-		List<List<Double>> tuples = new ArrayList<>(variablesValuesTuples.values());
-
-		//---
-
 		List<List<Double>> outputTuples = new ArrayList<>();
 
 		for (int i = 0; i < length; i++) {
 			List<Double> list = new ArrayList<>();
-			for (int j = 0; j < variablesValuesTuples.size(); j++) {
-				list.add(tuples.get(j).get(i));
+			for (String s : keysList) {
+				list.add(variablesValuesTuples.get(s).get(i));
 			}
-
 			outputTuples.add(list);
 		}
 
@@ -139,7 +133,7 @@ public class VariableValuesFunction {
 	private boolean hasSameLength() {
 		int length = -1;
 
-		for (List<Double> entry : variablesValuesTuples.values()) {
+		for (Collection<Double> entry : variablesValuesTuples.values()) {
 			if (length == -1) {
 				length = entry.size();
 			} else {
@@ -148,7 +142,7 @@ public class VariableValuesFunction {
 			}
 		}
 
-		return true;
+		return (length != -1);
 	}
 
 	//--------------

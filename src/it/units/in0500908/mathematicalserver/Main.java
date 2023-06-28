@@ -11,7 +11,6 @@ import java.io.IOException;
  */
 public class Main {
 	private static final String quitCommand = "BYE";
-
 	public static void main(String[] args) {
 		try {
 			int serverPort = Integer.parseInt(args[0]);
@@ -19,8 +18,8 @@ public class Main {
 			server.run();
 		} catch (NullPointerException | NumberFormatException ex) {
 			Logger.printLog(System.err, "Unable to create a new server: invalid port number. " + ex);
-		} catch (IOException e) {
-			Logger.printLog(System.err, "Unable to start MathematicalServer: " + e);
+		} catch (IOException ex) {
+			Logger.printLog(System.err, "Unable to start MathematicalServer: " + ex);
 		}
 	}
 }

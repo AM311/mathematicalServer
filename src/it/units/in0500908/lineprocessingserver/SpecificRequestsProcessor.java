@@ -5,6 +5,6 @@ import java.util.concurrent.Callable;
 /**
  * @author Alessio Manià - IN0500908
  */
-public interface SpecificRequestHandler extends Callable<String> {
+public interface SpecificRequestsProcessor extends Callable<String> {
 	//No extra-methods
 }

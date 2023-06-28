@@ -7,21 +7,15 @@ import java.text.DecimalFormatSymbols;
  * @author Alessio Manià - IN0500908
  */
 public class NumbersFormatter {
-	private static final int numOfDecimals = 5;
+
+	private static final int numOfDecimals = 5;					//Classe di utilità locale: numero fisso e stabilito qui
 
 	public static String millisFormat(long millis) {
 		return millisFormat((double) millis);
 	}
 
 	public static String millisFormat(double millis) {
-		DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-		dfs.setDecimalSeparator('.');
-		DecimalFormat df = new DecimalFormat("#.#", dfs);
-		df.setMinimumFractionDigits(numOfDecimals);
-		df.setGroupingUsed(false);
-
-		double seconds = millis / 1000.0;
-		return df.format(seconds);
+		return decimalFormat(millis / 1000.0);
 	}
 
 	public static String decimalFormat(double number) {
@@ -33,9 +27,5 @@ public class NumbersFormatter {
 		df.setGroupingUsed(false);
 
 		return df.format(number);
-	}
-
-	private void decimalFormatSetup() {
-
 	}
 }

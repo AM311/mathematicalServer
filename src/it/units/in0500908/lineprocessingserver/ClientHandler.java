@@ -39,6 +39,8 @@ public class ClientHandler extends Thread {
 			Logger.printLog(System.err, "Unhandled IO exception: " + ex.getMessage());
 		} catch (NullPointerException ex) {
 			Logger.printLog(System.err, "Client " + socket.getInetAddress() + " abruptly closed connection.");
+		} catch (RuntimeException ex) {
+			Logger.printLog(System.err, "Unhandled RuntimeException from:  " + socket.getInetAddress());
 		} catch (Error er) {
 			Logger.printLog(System.err, "ERROR: unable to guarantee proper server operation! " + er.getMessage());
 		}
