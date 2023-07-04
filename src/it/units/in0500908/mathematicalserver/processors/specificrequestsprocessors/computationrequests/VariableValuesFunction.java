@@ -1,6 +1,7 @@
 package it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests;
 
 import it.units.in0500908.mathematicalserver.InvalidRequestException;
+import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.ComputationRequestsProcessor;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -67,17 +68,10 @@ public class VariableValuesFunction {
 
 		List<String> keysList = new ArrayList<>(variablesValuesTuples.keySet());        //necessario per accedere a i-mo elemento
 
-		List<List<Double>> result;
-
-		switch (valuesKind) {
-			case "GRID" -> {
-				result = getCartesianProduct(keysList);
-			}
-			case "LIST" -> {
-				result = getList(keysList);
-			}
-			default -> throw new InvalidRequestException("Invalid ValuesKind value!");
-		}
+		List<List<Double>> result = switch (ComputationRequestsProcessor.ValuesKindToken.parse(valuesKind)) {
+			case GRID -> getCartesianProduct(keysList);
+			case LIST -> getList(keysList);
+		};
 
 		return new ValueTuples(keysList, result);
 	}
@@ -146,6 +140,20 @@ public class VariableValuesFunction {
 	}
 
 	//--------------
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(variablesValuesTuples);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof VariableValuesFunction that))
+			return false;
+		return Objects.equals(variablesValuesTuples, that.variablesValuesTuples);
+	}
 
 	@Override
 	public String toString() {

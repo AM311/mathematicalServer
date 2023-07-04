@@ -1,23 +1,21 @@
 package it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Alessio Manià - IN0500908
  */
 public class ValueTuples {
 	private final Map<String, Integer> variablesPositions;                  //Codifica nomi e posizioni relative
-	private final List<List<Double>> tuples;								//List<List> e non Set<List> per coerenza con la notazione della consegna
+	private final List<List<Double>> tuples;                                //List<List> e non Set<List> per coerenza con la notazione della consegna
+
 	public ValueTuples(List<String> varNames, List<List<Double>> tuples) throws IllegalArgumentException {
 		if (!isValid(varNames, tuples))
 			throw new IllegalArgumentException("Impossible to create a Tuple: invalid arguments!");
 
 		this.tuples = tuples;
 
-		variablesPositions = new LinkedHashMap<>();					//mantiene ordine
+		variablesPositions = new LinkedHashMap<>();                    //mantiene ordine + anche parametri valorizzati da VVF con LinkedHash
 		for (int i = 0; i < varNames.size(); i++) {
 			variablesPositions.put(varNames.get(i), i);
 		}
@@ -47,7 +45,7 @@ public class ValueTuples {
 
 		Map<String, Double> iTuple = new HashMap<>();
 
-		for (String varName : variablesPositions.keySet()) {											//Ordine è garantito: LinkedHashMap --> SortedSet in runtime
+		for (String varName : variablesPositions.keySet()) {                                            //Ordine è garantito: LinkedHashMap --> SortedSet in runtime
 			iTuple.put(varName, tuples.get(index).get(variablesPositions.get(varName)));
 		}
 
@@ -59,6 +57,20 @@ public class ValueTuples {
 	}
 
 	//---------
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(variablesPositions, tuples);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof ValueTuples that))
+			return false;
+		return Objects.equals(variablesPositions, that.variablesPositions) && Objects.equals(tuples, that.tuples);
+	}
 
 	@Override
 	public String toString() {

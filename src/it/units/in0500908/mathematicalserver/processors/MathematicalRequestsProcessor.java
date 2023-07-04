@@ -15,13 +15,12 @@ import java.util.concurrent.Future;
  * @author Alessio Manià - IN0500908
  */
 public class MathematicalRequestsProcessor implements RequestsProcessor {
-	private final ResponsesBuilderWithStatistics responsesProcessor;    //Si basa su Responses Processor (eventualità qui decisa)
-	//ResponsesHandler definito internamente: dipende STRETTAMENTE da questa classe!
+	private final ResponsesBuilderWithStatistics responsesBuilder;
 	private final ExecutorService limitedExecutorService;
 	private final ExecutorService unlimitedExecutorService;
 
-	public MathematicalRequestsProcessor() {
-		responsesProcessor = new MathematicalResponsesBuilder("OK", "ERR");
+	public MathematicalRequestsProcessor(ResponsesBuilderWithStatistics responsesBuilder) {
+		this.responsesBuilder = responsesBuilder;
 		unlimitedExecutorService = Executors.newCachedThreadPool();
 		limitedExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	}
@@ -34,18 +33,18 @@ public class MathematicalRequestsProcessor implements RequestsProcessor {
 
 		try {
 			if (StatRequestsProcessor.isStatRequest(request)) {
-				futureResponse = unlimitedExecutorService.submit(new StatRequestsProcessor(responsesProcessor, request));
+				futureResponse = unlimitedExecutorService.submit(new StatRequestsProcessor(responsesBuilder.getStatisticsManager(), request));
 			} else if (ComputationRequestsProcessor.isComputationRequest(request)) {
 				futureResponse = limitedExecutorService.submit(new ComputationRequestsProcessor(request));
 			} else {
 				throw new InvalidRequestException("String not matching any kind of accepted request.");
 			}
 
-			return responsesProcessor.buildOkResponse(futureResponse.get(), startingMillis);
+			return responsesBuilder.buildOkResponse(futureResponse.get(), startingMillis);
 		} catch (ExecutionException | InterruptedException ex) {
-			return responsesProcessor.buildErrResponse(ex.getCause().getLocalizedMessage());
+			return responsesBuilder.buildErrResponse(ex.getCause().getLocalizedMessage());
 		} catch (InvalidRequestException | RuntimeException ex) {
-			return responsesProcessor.buildErrResponse(ex.getLocalizedMessage());
+			return responsesBuilder.buildErrResponse(ex.getLocalizedMessage());
 		}
 	}
 }

@@ -8,8 +8,6 @@ import it.units.in0500908.mathematicalserver.processors.specificrequestsprocesso
 import it.units.in0500908.utils.Logger;
 import it.units.in0500908.utils.NumbersFormatter;
 
-import java.util.Set;
-
 /**
  * @author Alessio Manià - IN0500908
  */
@@ -21,33 +19,32 @@ public class ComputationRequestsProcessor implements SpecificRequestsProcessor {
 	}
 
 	public static boolean isComputationRequest(String request) {
-		final String regex = "^(AVG|MAX|MIN|COUNT)(_)(GRID|LIST)(;)(.*)";
-
-		return request.matches(regex);
+		try {
+			return ComputationKindToken.isValid(request.split("_")[0]) && ValuesKindToken.isValid(request.split("_")[1].split(";")[0]);
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			return false;
+		}
 	}
 
 	@Override
 	public String call() throws InvalidRequestException {
-		Set<String> computationKinds = Set.of("MIN", "MAX", "AVG", "COUNT");            //todo valutare se togliere (già verificato a monte)
-		Set<String> valuesKinds = Set.of("GRID", "LIST");
-
 		String computationKind;
 		VariableValuesFunction variableValuesFunction;
 		ValueTuples valueTuples;
 		Expression[] expressions;
 
-		// >>> ComputationKind + OTHERS
+		// >>> ComputationKindToken + OTHERS
 		String[] firstSplitTokens = request.split("_");
 		computationKind = firstSplitTokens[0];
 
-		if (firstSplitTokens.length != 2 || !computationKinds.contains(computationKind)) {			//todo togliere contains qui e sotto
+		if (firstSplitTokens.length != 2) {
 			throw new InvalidRequestException("Format not matching any kind of request");
 		}
 
-		// >>> ValuesKind + variableValuesFunction + Expressions (1+)
+		// >>> ValuesKindToken + variableValuesFunction + Expressions (1+)
 		String[] secondSplitTokens = firstSplitTokens[1].split(";");
 
-		if (secondSplitTokens.length < 3 || !valuesKinds.contains(secondSplitTokens[0])) {
+		if (secondSplitTokens.length < 3) {
 			throw new InvalidRequestException("Format not matching any kind of request");
 		}
 
@@ -66,14 +63,12 @@ public class ComputationRequestsProcessor implements SpecificRequestsProcessor {
 			throw new InvalidRequestException("Invalid computation request: unable to process Expression", ex);
 		}
 
-		Logger.printLog(System.out, valueTuples.toString());            //TEST
-
 		return getComputationResponse(computationKind, valueTuples, expressions);
 	}
 
 	private static String getComputationResponse(String computationKind, ValueTuples tuples, Expression[] expressions) throws InvalidRequestException {
-		switch (computationKind) {
-			case "MIN", "MAX" -> {
+		return switch (ComputationKindToken.parse(computationKind)) {
+			case MIN, MAX -> {
 				double returnValue = computationKind.equals("MIN") ? Double.MAX_VALUE : Double.MIN_VALUE;
 
 				for (Expression exp : expressions) {
@@ -87,22 +82,86 @@ public class ComputationRequestsProcessor implements SpecificRequestsProcessor {
 						}
 					}
 				}
-				return NumbersFormatter.decimalFormat(returnValue);
+				yield NumbersFormatter.decimalFormat(returnValue);
 			}
-			case "AVG" -> {
+			case AVG -> {
 				double avgValue = 0;
 
 				for (int i = 0; i < tuples.getNumOfTuples(); i++) {
 					avgValue += expressions[0].evaluate(tuples.getTupleByIndex(i));
 				}
 
-				return NumbersFormatter.decimalFormat(avgValue / tuples.getNumOfTuples());
+				yield NumbersFormatter.decimalFormat(avgValue / tuples.getNumOfTuples());
 			}
-			case "COUNT" -> {
-				return String.valueOf(tuples.getNumOfTuples());
-			}
+			case COUNT -> String.valueOf(tuples.getNumOfTuples());
+		};
+	}
+
+	public enum ComputationKindToken {
+		MIN("MIN"), MAX("MAX"), AVG("AVG"), COUNT("COUNT");
+
+		private final String tokenString;
+
+		ComputationKindToken(String tokenString) {
+			this.tokenString = tokenString;
 		}
 
-		throw new InvalidRequestException("Unhandled Computation Request");
+		public static boolean isValid(String computationKind) {
+			for (ComputationKindToken token : ComputationKindToken.values()) {
+				if (token.tokenString.equals(computationKind)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		public static ComputationKindToken parse(String computationKind) throws InvalidRequestException {
+			for (ComputationKindToken token : ComputationKindToken.values()) {
+				if (token.tokenString.equals(computationKind)) {
+					return token;
+				}
+			}
+
+			throw new InvalidRequestException("Invalid ComputationKindToken string!");
+		}
+
+		public String getTokenString() {
+			return this.tokenString;
+		}
+	}
+
+	public enum ValuesKindToken {
+		GRID("GRID"), LIST("LIST");
+
+		private final String tokenString;
+
+		ValuesKindToken(String tokenString) {
+			this.tokenString = tokenString;
+		}
+
+		public static boolean isValid(String valuesKind) {
+			for (ValuesKindToken token : ValuesKindToken.values()) {
+				if (token.tokenString.equals(valuesKind)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		public static ValuesKindToken parse(String valuesKind) throws InvalidRequestException {
+			for (ValuesKindToken token : ValuesKindToken.values()) {
+				if (token.tokenString.equals(valuesKind)) {
+					return token;
+				}
+			}
+
+			throw new InvalidRequestException("Invalid ValuesKindToken string!");
+		}
+
+		public String getTokenString() {
+			return this.tokenString;
+		}
 	}
 }
