@@ -14,7 +14,7 @@ public class Expression {
 		Parser parser = new Parser(expression);
 		element = parser.parse();
 
-		if(!element.toString().replace(" ", "").equals(expression)) {
+		if (!element.toString().replace(" ", "").equals(expression)) {
 			throw new InvalidRequestException(String.format("Expression %s is not matching the requested format.", expression));
 		}
 	}

@@ -17,6 +17,7 @@ public abstract class ResponsesBuilderWithStatistics implements ResponsesBuilder
 	//=======================
 
 	public abstract String buildOkResponse(String message, long startingMillis);
+
 	public abstract String buildErrResponse(String message, long startingMillis);
 
 }

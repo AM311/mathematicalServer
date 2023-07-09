@@ -5,5 +5,6 @@ package it.units.in0500908.lineprocessingserver;
  */
 public interface ResponsesBuilder {
 	String buildOkResponse(String message);
+
 	String buildErrResponse(String message);
 }

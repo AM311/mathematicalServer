@@ -9,12 +9,19 @@ import it.units.in0500908.utils.NumbersFormatter;
 public class MathematicalResponsesBuilder extends ResponsesBuilderWithStatistics {
 	private final String okResponsesPrefix;
 	private final String errResponsesPrefix;
+
 	public MathematicalResponsesBuilder(String okResponsesPrefix, String errResponsesPrefix) {
 		this.okResponsesPrefix = okResponsesPrefix;
 		this.errResponsesPrefix = errResponsesPrefix;
 	}
 
 	//========================================
+
+	@Override
+	@Deprecated
+	public String buildOkResponse(String message) {
+		return buildOkResponse(message, System.currentTimeMillis());
+	}
 
 	@Override
 	public String buildOkResponse(String message, long startingMillis) {
@@ -28,12 +35,6 @@ public class MathematicalResponsesBuilder extends ResponsesBuilderWithStatistics
 	@Override
 	public String buildErrResponse(String message, long startingMillis) {
 		return buildErrResponse(message);
-	}
-
-	@Override
-	@Deprecated
-	public String buildOkResponse(String message) {
-		return buildOkResponse(message, System.currentTimeMillis());
 	}
 
 	@Override

@@ -3,7 +3,7 @@ package it.units.in0500908.mathematicalserver;
 /**
  * @author Alessio Manià - IN0500908
  */
-public class InvalidRequestException extends Exception{
+public class InvalidRequestException extends Exception {
 	public InvalidRequestException() {
 	}
 

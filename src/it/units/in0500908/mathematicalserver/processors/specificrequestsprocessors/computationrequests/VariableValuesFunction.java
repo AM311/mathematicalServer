@@ -52,9 +52,9 @@ public class VariableValuesFunction {
 	//----------------
 
 	public List<Double> generateValues(double lowerBound, double upperBound, double step) {
-		BigDecimal bdLowerBound = new BigDecimal(lowerBound);
-		BigDecimal bdStep = new BigDecimal(step);
-		BigDecimal bdUpperBound = new BigDecimal(upperBound).add(bdStep);
+		BigDecimal bdLowerBound = BigDecimal.valueOf(lowerBound);
+		BigDecimal bdStep = BigDecimal.valueOf(step);
+		BigDecimal bdUpperBound = BigDecimal.valueOf(upperBound).add(bdStep);
 
 		return Stream.iterate(bdLowerBound, d -> d.compareTo(bdUpperBound) < 0, d -> d.add(bdStep)).mapToDouble(BigDecimal::doubleValue).boxed().collect(Collectors.toList());
 	}

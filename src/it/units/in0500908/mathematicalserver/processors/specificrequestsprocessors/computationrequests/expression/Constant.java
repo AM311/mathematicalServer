@@ -23,17 +23,20 @@ public class Constant extends Node {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		if (!super.equals(o)) return false;
-		Constant constant = (Constant) o;
-		return Double.compare(constant.value, value) == 0;
+	public int hashCode() {
+		return Objects.hash(super.hashCode(), value);
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(super.hashCode(), value);
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		if (!super.equals(o))
+			return false;
+		Constant constant = (Constant) o;
+		return Double.compare(constant.value, value) == 0;
 	}
 
 	@Override
