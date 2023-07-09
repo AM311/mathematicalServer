@@ -15,13 +15,12 @@ public class VariableValuesFunction {
 	private final Map<String, List<Double>> variablesValuesTuples;
 
 	public VariableValuesFunction(String variableValuesFunctionString) throws InvalidRequestException {
-		this.variablesValuesTuples = new LinkedHashMap<>();                        //NOTA! MANTIENE ORDINE!
+		this.variablesValuesTuples = new LinkedHashMap<>();
 		parseFunction(variableValuesFunctionString);
 	}
 
 	//----------------
 
-	//Scelto di fare parsing e salvare direttamente valori: non necessaria memoria su tupla iniziale da cui derivano
 	private void parseFunction(String function) throws InvalidRequestException {
 		String[] variablesValues = function.split(",");
 
@@ -33,19 +32,19 @@ public class VariableValuesFunction {
 				if (values[0].matches("[a-z][a-z0-9]*"))
 					varName = values[0];
 				else
-					throw new InvalidRequestException("Unable to process VariableValuesFunction: VarName not respecting the protocol!");
+					throw new InvalidRequestException("VarName not respecting the protocol!");
 
 				double lowerBound = Double.parseDouble(values[1]);
 				double upperBound = Double.parseDouble(values[3]);
 				double step = Double.parseDouble(values[2]);
 
 				if (step < 0) {
-					throw new InvalidRequestException("Unable to process VariableValuesFunction: step must be positive!");
+					throw new InvalidRequestException("Step must be positive!");
 				}
 
 				variablesValuesTuples.put(varName, generateValues(lowerBound, upperBound, step));
 			} catch (ArrayIndexOutOfBoundsException | IllegalArgumentException ex) {
-				throw new InvalidRequestException("Unable to process VariableValuesFunction", ex);
+				throw new InvalidRequestException("Exception during processing: " + ex.getMessage());
 			}
 		}
 	}
@@ -53,7 +52,7 @@ public class VariableValuesFunction {
 	//----------------
 
 	public List<Double> generateValues(double lowerBound, double upperBound, double step) {
-		BigDecimal bdLowerBound = new BigDecimal(lowerBound);                                //Utilizzo di BigDecimal per migliorare precisione
+		BigDecimal bdLowerBound = new BigDecimal(lowerBound);
 		BigDecimal bdStep = new BigDecimal(step);
 		BigDecimal bdUpperBound = new BigDecimal(upperBound).add(bdStep);
 
@@ -66,7 +65,7 @@ public class VariableValuesFunction {
 		if (variablesValuesTuples.size() == 0)
 			return new ValueTuples(new ArrayList<>(), new ArrayList<>());
 
-		List<String> keysList = new ArrayList<>(variablesValuesTuples.keySet());        //necessario per accedere a i-mo elemento
+		List<String> keysList = new ArrayList<>(variablesValuesTuples.keySet());
 
 		List<List<Double>> result = switch (ComputationRequestsProcessor.ValuesKindToken.parse(valuesKind)) {
 			case GRID -> getCartesianProduct(keysList);

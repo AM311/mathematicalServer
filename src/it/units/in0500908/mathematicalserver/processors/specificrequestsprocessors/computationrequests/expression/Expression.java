@@ -8,7 +8,7 @@ import java.util.Map;
  * @author Alessio Manià - IN0500908
  */
 public class Expression {
-	private final Node element;                        //todo basta solo questo?!
+	private final Node element;
 
 	public Expression(String expression) throws InvalidRequestException {
 		Parser parser = new Parser(expression);

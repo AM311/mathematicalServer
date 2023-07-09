@@ -19,30 +19,31 @@ public class ClientHandler extends Thread {
 
 	@Override
 	public void run() {
-		try(socket) {
+		try (socket) {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
 			Logger.printLog(System.out, "New connection: " + socket.getInetAddress());
 
-			while(true) {
+			while (true) {
 				String request = reader.readLine();
 
-				if(request.equals(server.getQuitCommand())) {
+				if (request.equals(server.getQuitCommand())) {
 					break;
 				}
 
-				writer.write(server.getRequestsProcessor().process(request));
+				writer.write(server.getRequestsProcessor().process(request) + System.lineSeparator());
 				writer.flush();
 			}
-		} catch (IOException ex) {
-			Logger.printLog(System.err, "Unhandled IO exception: " + ex.getMessage());
+
 		} catch (NullPointerException ex) {
 			Logger.printLog(System.err, "Client " + socket.getInetAddress() + " abruptly closed connection.");
+		} catch (IOException ex) {
+			Logger.printLog(System.err, "Unhandled IO exception: " + ex.getMessage());
 		} catch (RuntimeException ex) {
-			Logger.printLog(System.err, "Unhandled RuntimeException from:  " + socket.getInetAddress());
+			Logger.printLog(System.err, "Unhandled RuntimeException from " + socket.getInetAddress() + ": " + ex.getMessage());
 		} catch (Error er) {
-			Logger.printLog(System.err, "ERROR: unable to guarantee proper server operation! " + er.getMessage());
+			Logger.printLog(System.err, "ERROR while managing " + socket.getInetAddress() + ": " + er.getMessage());
 		}
 
 		Logger.printLog(System.out, "Closed connection: " + socket.getInetAddress());

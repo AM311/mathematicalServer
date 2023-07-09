@@ -15,12 +15,7 @@ public class InvalidRequestException extends Exception{
 		super(message, cause);
 	}
 
-	public InvalidRequestException(Throwable cause) {
-		super(cause);
-	}
-
 	//--------------------------
-
 
 	@Override
 	public String getLocalizedMessage() {

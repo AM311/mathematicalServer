@@ -13,7 +13,7 @@ public class Parser {
 	private int cursor = 0;
 
 	public Parser(String string) {
-		this.string = string;                                    //tolta tolleranza sugli spazi: protocollo non lo prevede!
+		this.string = string;
 	}
 
 	public Node parse() throws IllegalArgumentException {

@@ -17,9 +17,9 @@ public class Main {
 			LineProcessingServer server = new LineProcessingServer(serverPort, "BYE", new MathematicalRequestsProcessor(new MathematicalResponsesBuilder("OK", "ERR")));
 			server.run();
 		} catch (NullPointerException | NumberFormatException ex) {
-			Logger.printLog(System.err, "Unable to create a new server: invalid port number. " + ex);
-		} catch (IOException ex) {
-			Logger.printLog(System.err, "Unable to start MathematicalServer: " + ex);
+			Logger.printLog(System.err, "Unable to create a new server: invalid port number. " + ex.getMessage());
+		} catch (IOException | RuntimeException | Error ex) {
+			Logger.printLog(System.err, "Unable to start MathematicalServer:  " + ex.getMessage());
 		}
 	}
 }

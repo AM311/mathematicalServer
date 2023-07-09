@@ -4,13 +4,13 @@ package it.units.in0500908.lineprocessingserver;
  * @author Alessio Manià - IN0500908
  */
 public abstract class ResponsesBuilderWithStatistics implements ResponsesBuilder {
-	StatisticsCounter statisticsCounter;
+	protected final StatisticsCounter statisticsCounter;
 
 	public ResponsesBuilderWithStatistics() {
 		this.statisticsCounter = new StatisticsCounter();
 	}
 
-	public StatisticsCounter getStatisticsManager() {
+	public StatisticsCounter getStatisticsCounter() {
 		return statisticsCounter;
 	}
 

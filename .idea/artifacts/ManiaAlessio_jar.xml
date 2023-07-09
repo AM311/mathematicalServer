@@ -1,8 +1,9 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="ManiaAlessio:jar">
+  <artifact type="jar" build-on-make="true" name="ManiaAlessio:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/ManiaAlessio_jar</output-path>
     <root id="archive" name="ManiaAlessio.jar">
       <element id="module-output" name="it.units.in0500908.mathematicalServer" />
+      <element id="module-source" name="it.units.in0500908.mathematicalServer" />
     </root>
   </artifact>
 </component>

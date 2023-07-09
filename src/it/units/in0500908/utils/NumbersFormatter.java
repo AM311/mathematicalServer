@@ -8,7 +8,7 @@ import java.text.DecimalFormatSymbols;
  */
 public class NumbersFormatter {
 
-	private static final int numOfDecimals = 5;					//Classe di utilità locale: numero fisso e stabilito qui
+	private static final int numOfDecimals = 5;
 
 	public static String millisFormat(long millis) {
 		return millisFormat((double) millis);

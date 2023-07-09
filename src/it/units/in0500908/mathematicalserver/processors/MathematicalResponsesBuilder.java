@@ -17,10 +17,10 @@ public class MathematicalResponsesBuilder extends ResponsesBuilderWithStatistics
 	//========================================
 
 	@Override
-	public synchronized String buildOkResponse(String message, long startingMillis) {
+	public String buildOkResponse(String message, long startingMillis) {
 		int responseTime = (int) (System.currentTimeMillis() - startingMillis);
 
-		getStatisticsManager().updateStatistics(responseTime);
+		statisticsCounter.updateStatistics(responseTime);
 
 		return okResponsesPrefix + ';' + NumbersFormatter.millisFormat(responseTime) + ';' + message;
 	}
@@ -32,7 +32,7 @@ public class MathematicalResponsesBuilder extends ResponsesBuilderWithStatistics
 
 	@Override
 	@Deprecated
-	public String buildOkResponse(String message) {						//considera solo tempo da adesso --> tornerà ragionevolmente zero
+	public String buildOkResponse(String message) {
 		return buildOkResponse(message, System.currentTimeMillis());
 	}
 

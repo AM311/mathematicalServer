@@ -9,8 +9,8 @@ import it.units.in0500908.utils.NumbersFormatter;
  * @author Alessio Manià - IN0500908
  */
 public class StatRequestsProcessor implements SpecificRequestsProcessor {
-	private final StatisticsCounter statisticsCounter;                    	//Necessario per accedere alle statistiche
-	private final String request;                                       	//Necessario: callable non accetta argomenti
+	private final StatisticsCounter statisticsCounter;
+	private final String request;
 
 	public StatRequestsProcessor(StatisticsCounter statisticsCounter, String request) {
 		this.statisticsCounter = statisticsCounter;
@@ -22,9 +22,9 @@ public class StatRequestsProcessor implements SpecificRequestsProcessor {
 	}
 
 	@Override
-	public String call() throws InvalidRequestException {                //Passaggio a ENUM forza a gestire tutti i casi
+	public String call() throws InvalidRequestException {
 		return switch (StatRequestToken.parse(request)) {
-			case REQS -> String.valueOf(statisticsCounter.getNumOfResponses());
+			case REQS -> NumbersFormatter.decimalFormat(statisticsCounter.getNumOfResponses());
 			case AVG -> NumbersFormatter.millisFormat(statisticsCounter.getAvgResponseTime());
 			case MAX -> NumbersFormatter.millisFormat(statisticsCounter.getMaxResponseTime());
 		};
@@ -41,14 +41,14 @@ public class StatRequestsProcessor implements SpecificRequestsProcessor {
 			this.tokenString = tokenString;
 		}
 
-		public static boolean isValid(String request) {							//NO INTERFACCIA: DEVONO ESSERE METODI STATICI!
-			for (StatRequestToken token : StatRequestToken.values()) {
-				if (token.tokenString.equals(request)) {
-					return true;
-				}
+		public static boolean isValid(String request) {
+			try {
+				parse(request);
+			} catch (InvalidRequestException e) {
+				return false;
 			}
 
-			return false;
+			return true;
 		}
 
 		public static StatRequestToken parse(String request) throws InvalidRequestException {

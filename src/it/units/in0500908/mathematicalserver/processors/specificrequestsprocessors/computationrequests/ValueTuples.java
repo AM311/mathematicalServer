@@ -1,13 +1,15 @@
 package it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests;
 
+import it.units.in0500908.mathematicalserver.InvalidRequestException;
+
 import java.util.*;
 
 /**
  * @author Alessio Manià - IN0500908
  */
 public class ValueTuples {
-	private final Map<String, Integer> variablesPositions;                  //Codifica nomi e posizioni relative
-	private final List<List<Double>> tuples;                                //List<List> e non Set<List> per coerenza con la notazione della consegna
+	private final Map<String, Integer> variablesPositions;
+	private final List<List<Double>> tuples;
 
 	public ValueTuples(List<String> varNames, List<List<Double>> tuples) throws IllegalArgumentException {
 		if (!isValid(varNames, tuples))
@@ -15,7 +17,7 @@ public class ValueTuples {
 
 		this.tuples = tuples;
 
-		variablesPositions = new LinkedHashMap<>();                    //mantiene ordine + anche parametri valorizzati da VVF con LinkedHash
+		variablesPositions = new LinkedHashMap<>();
 		for (int i = 0; i < varNames.size(); i++) {
 			variablesPositions.put(varNames.get(i), i);
 		}
@@ -38,14 +40,14 @@ public class ValueTuples {
 
 	//---------
 
-	public Map<String, Double> getTupleByIndex(int index) throws IndexOutOfBoundsException {
+	public Map<String, Double> getTupleByIndex(int index) throws InvalidRequestException {
 		if (index > getNumOfTuples()) {
-			throw new IndexOutOfBoundsException("There are less then " + index + " tuples!");
+			throw new InvalidRequestException("There are less then " + index + " tuples!");
 		}
 
 		Map<String, Double> iTuple = new HashMap<>();
 
-		for (String varName : variablesPositions.keySet()) {                                            //Ordine è garantito: LinkedHashMap --> SortedSet in runtime
+		for (String varName : variablesPositions.keySet()) {
 			iTuple.put(varName, tuples.get(index).get(variablesPositions.get(varName)));
 		}
 

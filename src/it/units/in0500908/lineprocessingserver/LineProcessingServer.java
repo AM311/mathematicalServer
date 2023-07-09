@@ -30,7 +30,7 @@ public class LineProcessingServer {
 
 	//========================
 	public void run() throws IOException {
-		try (ServerSocket serverSocket = new ServerSocket(port)) {
+		try (ServerSocket serverSocket = new ServerSocket(port); requestsProcessor) {
 			while (true) {
 				Socket socket;
 				try {
@@ -38,9 +38,15 @@ public class LineProcessingServer {
 					ClientHandler clientHandler = new ClientHandler(socket, this);
 					clientHandler.start();
 				} catch (IOException ex) {
-					Logger.printLog(System.err, "Unable to accept connection: " + ex);
+					Logger.printLog(System.err, "Unable to accept connection: " + ex.getMessage());
+				} catch (RuntimeException ex) {
+					Logger.printLog(System.err, "RuntimeException trying managing new client connection: " + ex.getMessage());
 				}
 			}
+		} catch (IOException| RuntimeException ex) {
+			throw ex;
+		} catch (Exception ex) {
+			Logger.printLog(System.err, "Exception trying closing resources: " + ex);
 		}
 	}
 }

@@ -5,14 +5,13 @@ import it.units.in0500908.mathematicalserver.InvalidRequestException;
 import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests.ValueTuples;
 import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests.VariableValuesFunction;
 import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.computationrequests.expression.Expression;
-import it.units.in0500908.utils.Logger;
 import it.units.in0500908.utils.NumbersFormatter;
 
 /**
  * @author Alessio Manià - IN0500908
  */
 public class ComputationRequestsProcessor implements SpecificRequestsProcessor {
-	private final String request;                            //Necessario: callable non accetta parametri
+	private final String request;
 
 	public ComputationRequestsProcessor(String request) {
 		this.request = request;
@@ -45,12 +44,16 @@ public class ComputationRequestsProcessor implements SpecificRequestsProcessor {
 		String[] secondSplitTokens = firstSplitTokens[1].split(";");
 
 		if (secondSplitTokens.length < 3) {
-			throw new InvalidRequestException("Format not matching any kind of request");
+			throw new InvalidRequestException("Request not matching Computation Request format");
 		}
 
 		// ValueTuples
-		variableValuesFunction = new VariableValuesFunction(secondSplitTokens[1]);
-		valueTuples = variableValuesFunction.getTuples(secondSplitTokens[0]);
+		try {
+			variableValuesFunction = new VariableValuesFunction(secondSplitTokens[1]);
+			valueTuples = variableValuesFunction.getTuples(secondSplitTokens[0]);
+		} catch (InvalidRequestException ex) {
+			throw new InvalidRequestException("Unable to process VariableValuesFunction", ex);
+		}
 
 		// Expressions
 		expressions = new Expression[secondSplitTokens.length - 2];
@@ -75,7 +78,7 @@ public class ComputationRequestsProcessor implements SpecificRequestsProcessor {
 					for (int i = 0; i < tuples.getNumOfTuples(); i++) {
 						double res = exp.evaluate(tuples.getTupleByIndex(i));
 
-						if (computationKind.equals("MIN") && Double.compare(res, returnValue) < 0) {                //Comparazione tramite Double gestisce NaN
+						if (computationKind.equals("MIN") && Double.compare(res, returnValue) < 0) {
 							returnValue = res;
 						} else if (computationKind.equals("MAX") && Double.compare(res, returnValue) > 0) {
 							returnValue = res;
@@ -93,7 +96,7 @@ public class ComputationRequestsProcessor implements SpecificRequestsProcessor {
 
 				yield NumbersFormatter.decimalFormat(avgValue / tuples.getNumOfTuples());
 			}
-			case COUNT -> String.valueOf(tuples.getNumOfTuples());
+			case COUNT -> NumbersFormatter.decimalFormat(tuples.getNumOfTuples());
 		};
 	}
 
@@ -107,13 +110,13 @@ public class ComputationRequestsProcessor implements SpecificRequestsProcessor {
 		}
 
 		public static boolean isValid(String computationKind) {
-			for (ComputationKindToken token : ComputationKindToken.values()) {
-				if (token.tokenString.equals(computationKind)) {
-					return true;
-				}
+			try {
+				parse(computationKind);
+			} catch (InvalidRequestException e) {
+				return false;
 			}
 
-			return false;
+			return true;
 		}
 
 		public static ComputationKindToken parse(String computationKind) throws InvalidRequestException {
@@ -141,13 +144,13 @@ public class ComputationRequestsProcessor implements SpecificRequestsProcessor {
 		}
 
 		public static boolean isValid(String valuesKind) {
-			for (ValuesKindToken token : ValuesKindToken.values()) {
-				if (token.tokenString.equals(valuesKind)) {
-					return true;
-				}
+			try {
+				parse(valuesKind);
+			} catch (InvalidRequestException e) {
+				return false;
 			}
 
-			return false;
+			return true;
 		}
 
 		public static ValuesKindToken parse(String valuesKind) throws InvalidRequestException {

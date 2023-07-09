@@ -33,7 +33,7 @@ public class MathematicalRequestsProcessor implements RequestsProcessor {
 
 		try {
 			if (StatRequestsProcessor.isStatRequest(request)) {
-				futureResponse = unlimitedExecutorService.submit(new StatRequestsProcessor(responsesBuilder.getStatisticsManager(), request));
+				futureResponse = unlimitedExecutorService.submit(new StatRequestsProcessor(responsesBuilder.getStatisticsCounter(), request));
 			} else if (ComputationRequestsProcessor.isComputationRequest(request)) {
 				futureResponse = limitedExecutorService.submit(new ComputationRequestsProcessor(request));
 			} else {
@@ -46,5 +46,11 @@ public class MathematicalRequestsProcessor implements RequestsProcessor {
 		} catch (InvalidRequestException | RuntimeException ex) {
 			return responsesBuilder.buildErrResponse(ex.getLocalizedMessage());
 		}
+	}
+
+	@Override
+	public void close() {
+		limitedExecutorService.shutdown();
+		unlimitedExecutorService.shutdown();
 	}
 }
