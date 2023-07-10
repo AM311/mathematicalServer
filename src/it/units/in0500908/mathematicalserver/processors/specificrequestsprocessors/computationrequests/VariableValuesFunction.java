@@ -116,14 +116,14 @@ public class VariableValuesFunction {
 			throw new InvalidRequestException("Lists do not have the same length!");
 		}
 
-		int length = variablesValuesTuples.get(keysList.get(0)).size();
+		int tuplesLength = variablesValuesTuples.get(keysList.get(0)).size();
 
 		List<List<Double>> outputTuples = new ArrayList<>();
 
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < tuplesLength; i++) {
 			List<Double> list = new ArrayList<>();
-			for (String s : keysList) {
-				list.add(variablesValuesTuples.get(s).get(i));
+			for (String key : keysList) {
+				list.add(variablesValuesTuples.get(key).get(i));
 			}
 			outputTuples.add(list);
 		}

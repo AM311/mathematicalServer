@@ -26,7 +26,6 @@ public class MathematicalResponsesBuilder extends ResponsesBuilderWithStatistics
 	@Override
 	public String buildOkResponse(String message, long startingMillis) {
 		int responseTime = (int) (System.currentTimeMillis() - startingMillis);
-
 		statisticsCounter.updateStatistics(responseTime);
 
 		return okResponsesPrefix + ';' + NumbersFormatter.millisFormat(responseTime) + ';' + message;

@@ -46,7 +46,6 @@ public class MathematicalRequestsProcessor implements RequestsProcessor {
 			if (ex.getCause() instanceof Error er) {
 				Logger.printLog(System.err, "ERROR while managing client: " + er.getMessage());
 			}
-
 			return responsesBuilder.buildErrResponse(ex.getCause().getLocalizedMessage());
 		} catch (InvalidRequestException | RuntimeException ex) {
 			return responsesBuilder.buildErrResponse(ex.getLocalizedMessage());
