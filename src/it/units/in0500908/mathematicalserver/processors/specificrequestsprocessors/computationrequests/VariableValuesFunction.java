@@ -34,10 +34,11 @@ public class VariableValuesFunction {
 
 			try {
 				String varName;
-				if (values[0].matches("[a-z][a-z0-9]*"))
+				if (values[0].matches("[a-z][a-z0-9]*")) {
 					varName = values[0];
-				else
+				} else {
 					throw new InvalidRequestException("VarName not respecting the protocol!");
+				}
 
 				double lowerBound = Double.parseDouble(values[1]);
 				double upperBound = Double.parseDouble(values[3]);
@@ -67,8 +68,9 @@ public class VariableValuesFunction {
 	//-----------
 
 	public ValueTuples getTuples(String valuesKind) throws InvalidRequestException {
-		if (variablesValuesTuples.size() == 0)
+		if (variablesValuesTuples.size() == 0) {
 			return new ValueTuples(new ArrayList<>(), new ArrayList<>());
+		}
 
 		List<String> keysList = new ArrayList<>(variablesValuesTuples.keySet());
 
@@ -110,8 +112,9 @@ public class VariableValuesFunction {
 	}
 
 	private List<List<Double>> getList(List<String> keysList) throws InvalidRequestException {
-		if (!hasSameLength())
+		if (!hasSameLength()) {
 			throw new InvalidRequestException("Lists do not have the same length!");
+		}
 
 		int length = variablesValuesTuples.get(keysList.get(0)).size();
 

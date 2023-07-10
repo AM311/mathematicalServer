@@ -16,8 +16,9 @@ public class ValueTuples {
 	private final List<List<Double>> tuples;
 
 	public ValueTuples(List<String> varNames, List<List<Double>> tuples) throws IllegalArgumentException {
-		if (!isValid(varNames, tuples))
+		if (!isValid(varNames, tuples)) {
 			throw new IllegalArgumentException("Impossible to create a Tuple: invalid arguments!");
+		}
 
 		this.tuples = tuples;
 
@@ -34,8 +35,9 @@ public class ValueTuples {
 			if (size == -1) {
 				size = tuple.size();
 			} else {
-				if (tuple.size() != size)
+				if (tuple.size() != size) {
 					return false;
+				}
 			}
 		}
 
