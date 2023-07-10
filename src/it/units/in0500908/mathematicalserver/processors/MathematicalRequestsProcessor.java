@@ -5,6 +5,7 @@ import it.units.in0500908.lineprocessingserver.ResponsesBuilderWithStatistics;
 import it.units.in0500908.mathematicalserver.InvalidRequestException;
 import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.ComputationRequestsProcessor;
 import it.units.in0500908.mathematicalserver.processors.specificrequestsprocessors.StatRequestsProcessor;
+import it.units.in0500908.utils.Logger;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -42,6 +43,10 @@ public class MathematicalRequestsProcessor implements RequestsProcessor {
 
 			return responsesBuilder.buildOkResponse(futureResponse.get(), startingMillis);
 		} catch (ExecutionException | InterruptedException ex) {
+			if (ex.getCause() instanceof Error er) {
+				Logger.printLog(System.err, "ERROR while managing client: " + er.getMessage());
+			}
+
 			return responsesBuilder.buildErrResponse(ex.getCause().getLocalizedMessage());
 		} catch (InvalidRequestException | RuntimeException ex) {
 			return responsesBuilder.buildErrResponse(ex.getLocalizedMessage());
